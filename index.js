@@ -72,7 +72,7 @@ app.get("/api/details/:id", (req, res) => {
         var released = "";
         var status = "";
         var genres = [];
-        var otherName = "";
+        var Othername = ""; // Changed variable name here
         var title = $(".anime_info_body_bg").children("h1").text();
         var image = $(".anime_info_body_bg").children("img").attr().src;
 
@@ -88,9 +88,9 @@ app.get("/api/details/:id", (req, res) => {
           } else if (spanText === "Status:") {
             status = content;
           } else if (spanText === "Genre:") {
-            genres = content.split(",").map(genre => genre.trim());
+            genres = content.split(",").map(genre => genre.trim()).join(", ");
           } else if (spanText === "Other name:") {
-            otherName = content;
+            Othername = content; // Changed variable name here
           }
         });
 
@@ -105,7 +105,7 @@ app.get("/api/details/:id", (req, res) => {
           genres,
           status,
           totalepisode,
-          otherName,
+          Othername, // Changed variable name here
         };
 
         res.status(200).json({ results });
