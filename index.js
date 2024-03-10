@@ -67,50 +67,47 @@ app.get("/api/details/:id", (req, res) => {
     if (!err) {
       try {
         var $ = cheerio.load(html);
-        var type = " ";
+        var type = "";
         var summary = "";
-        var relased = "";
+        var released = "";
         var status = "";
-        var genres = "";
-        var Othername = "";
+        var genres = [];
+        var otherName = "";
         var title = $(".anime_info_body_bg").children("h1").text();
         var image = $(".anime_info_body_bg").children("img").attr().src;
 
-        $("p.type").each(function (index, element) {
-          if ("Type: " == $(this).children("span").text()) {
-            type = $(this).text().slice(15, -5);
-          } else if ("Plot Summary: " == $(this).children("span").text()) {
-            summary = $(this).text().slice(14);
-          } else if ("Released: " == $(this).children("span").text()) {
-            relased = $(this).text().slice(10);
-          } else if ("Status: " == $(this).children("span").text()) {
-            status = $(this).text().slice(8);
-          } else if ("Genre: " == $(this).children("span").text()) {
-            genres = $(this).text().slice(20, -4);
-            genres = genres.split(",");
-            genres = genres.join(",");
-          } else "Other name: " == $(this).children("span").text();
-          {
-            Othername = $(this).text().slice(12);
+        $(".type").each(function (index, element) {
+          var spanText = $(this).children("span").text().trim();
+          var content = $(this).text().replace(spanText, "").trim();
+          if (spanText === "Type:") {
+            type = content;
+          } else if (spanText === "Plot Summary:") {
+            summary = $(".description").text().trim();
+          } else if (spanText === "Released:") {
+            released = content;
+          } else if (spanText === "Status:") {
+            status = content;
+          } else if (spanText === "Genre:") {
+            genres = content.split(",").map(genre => genre.trim());
+          } else if (spanText === "Other name:") {
+            otherName = content;
           }
         });
-        genres.replace(" ");
-        var totalepisode = $("#episode_page")
-          .children("li")
-          .last()
-          .children("a")
-          .attr().ep_end;
+
+        var totalepisode = $("#episode_page").children("li").last().children("a").attr().ep_end;
+
         results[0] = {
           title,
           image,
           type,
           summary,
-          relased,
+          released,
           genres,
           status,
           totalepisode,
-          Othername,
+          otherName,
         };
+
         res.status(200).json({ results });
       } catch (e) {
         res.status(404).json({ e: "404 fuck off!!!!!" });
